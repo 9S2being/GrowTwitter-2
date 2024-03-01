@@ -7,4 +7,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @db.VarChar(60)
+  email     String    @unique
+  username  String    @unique
+  password  String    @db.VarChar(60)
 
+  tweets    Tweet[]
+  likes     Like[]
+  followers Follower[] @relation("UserToFollowers")
+  following Follower[] @relation("UserToFollowing")
+  replies   Reply[]
+
+  @@map("user")
+}
+
+enum TweetType {
+  Tweet
+  R
+}
+
+model Tweet {
+  id            String    @id @default(uuid()) @db.Uuid
+  content       String    @db.VarChar(60)
+  type          TweetType
+  
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String    @map("user_id") @db.Uuid 
+
+  likes         Like[]    @relation("LikesToTweet")
+  replies       Reply[]   @relation("TweetToReply")
+
+  repliedId     String?   @map("replied_Id")
+
+  @@map("tweet")
+}
+
+model Like {
+  id        String    @id @default(uuid()) @db.Uuid
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @map("user_id") @db.Uuid
+  tweet     Tweet     @relation("LikesToTweet", fields: [tweetId], references: [id])
+  tweetId   String    @map("tweet_id") @db.Uuid
+
+  @@unique([tweetId]) 
+
+  @@map("like")
+}
+
+model Follower {
+  id          String    @id @default(uuid()) @db.Uuid
+
+  user        User      @relation("UserToFollowers", fields: [userId], references: [id])
+  userId      String    @map("user_id") @db.Uuid
+
+  follower    User      @relation("UserToFollowing", fields: [followerId], references: [id])
+  followerId  String    @map("follower_id") @db.Uuid
+
+  @@unique([userId, followerId]) 
+
+  @@map("follower")
+}
+
+model Reply {
+  id          String    @id @default(uuid()) @db.Uuid
+  content     String    @db.VarChar(60)
+
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @map("user_id") @db.Uuid
+
+  tweet       Tweet     @relation("TweetToReply",fields: [tweetId], references: [id])
+  tweetId     String    @map("tweet_id") @db.Uuid
+
+  @@map("reply")
+}
