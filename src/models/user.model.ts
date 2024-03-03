@@ -7,7 +7,7 @@ export class User {
     private _name: string,
     private _email: string,
     private _password: string,
-    private _surname: string
+    private _username: string
   ) {
     this._id = randomUUID()
   }
@@ -28,7 +28,7 @@ export class User {
     return this._password
   }
 
-  get surname(): string {
-    return this._surname
+  get username(): string {
+    return this._username
   }
 }
