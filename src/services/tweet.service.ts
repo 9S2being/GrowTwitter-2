@@ -151,7 +151,7 @@ export class TweetService {
         
         
         const tweet = await repository.tweet.findUnique({
-            where: {id}
+            where: {id: id}
         })
 
         if(tweet){
@@ -160,7 +160,7 @@ export class TweetService {
 
         const result = await repository.tweet.delete({
             where: {
-                id
+                id: id
             }
         })
 
@@ -171,7 +171,7 @@ export class TweetService {
             data: result
         }
     };    
-    
+
 };
 
 
