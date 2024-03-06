@@ -55,11 +55,11 @@ export class UserService {
             const user = await repository.user.findUnique({
                 where: { id }
             })
-
-            if(!user) {
+        
+            if (!user) {
                 throw new Error("Usuário não encontrado")
             }
-
+        
             return {
                 success: true,
                 code: 200,
@@ -75,7 +75,7 @@ export class UserService {
                 }
             })
 
-            if(user) {
+            if(!user) {
                 throw new Error("Usuário não encontrado")
         }
 

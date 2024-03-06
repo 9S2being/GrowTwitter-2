@@ -1,23 +1,21 @@
-import { response } from "express";
+
+import { error } from "console";
 import { repository } from "../database/prisma.connection";
 import { ResponseDTO } from "../dtos/response.dto";
 import { CreateTweetDTO, UpdateTweetDTO } from "../dtos/tweet.dto";
-import { Tweet, TweetType } from "../models/tweet.model";
+
 
 //Listar tweets
 export class TweetService {
     public async findAll(idUser: string): Promise<ResponseDTO> {
         try {
-            const user = await repository.user.findUnique({
+            const tweets = await repository.tweet.findMany({
                 where: {
-                    id: idUser
-                },
-                include: {
-                    tweets: true
+                    userId: idUser
                 }
             });
 
-            if (!user) {
+            if (!tweets) {
                 return {
                     success: false,
                     code: 404,
@@ -30,52 +28,73 @@ export class TweetService {
                 success: true,
                 code: 200,
                 message: "Tweets listados com sucesso",
-                data: user.tweets 
+                data: tweets
             };
         } catch (error) {
+
+          
             return {
                 success: false,
-                code: 500,
-                message: "Erro ao listar tweets",
+                code: 400,
+                message: "Erro ao listar tweets" ,
                 data: null
             };
+
+            
+
         }
     }
+    
 
     //Criar tweets
-    public async create(tweetDTO: CreateTweetDTO): Promise<ResponseDTO> {
-        const user = await repository.user.findUnique({
-            where: {
-                id: tweetDTO.idUser
-            }
-        })
+  //Supondo que você tenha definido os tipos CreateUserDTO, CreateTweetDTO e ResponseDTO em um arquivo separado
 
+  public async create(tweetDTO: CreateTweetDTO): Promise<ResponseDTO> {
+    try {
+        // Procurar o usuário pelo ID fornecido
+        const user = await repository.user.findFirst({
+            where: { id: tweetDTO.idUser }
+        });
+
+        // Verificar se o usuário existe
         if (!user) {
-            throw new Error("Usuário não encontrado").cause
+            return {
+                success: false,
+                code: 404,
+                message: "User not found",
+            };
         }
 
-        const newTweet = new Tweet(
-            tweetDTO.content,
-            tweetDTO.type as TweetType,
-            tweetDTO.idUser
-        )
-
+        // Criar o tweet associado ao usuário
         const createdTweet = await repository.tweet.create({
             data: {
-                content: newTweet.content,
-                type: newTweet.type as TweetType,
-                userId: newTweet.idUser
+                content: tweetDTO.content,
+                type: tweetDTO.type,
+                userId: tweetDTO.idUser
             }
-        })
+        });
 
+        // Retornar uma resposta de sucesso com o tweet criado
         return {
             success: true,
             code: 201,
-            message: "Tweet criado com sucesso.",
+            message: "Tweet created successfully.",
             data: createdTweet
-        }
+        };
+    } catch (error) {
+        console.error("Error creating tweet:", error);
+        return {
+            success: false,
+            code: 400,
+            message: "Error creating tweet",
+        };
     }
+};
 
+
+    
+    
+    
     //encontrar tweet especifico
     public async findById(idUser: string, id: string): Promise<ResponseDTO> {
         const tweet = await repository.tweet.findUnique({
@@ -96,7 +115,7 @@ export class TweetService {
             message: "Tweet encontrado com sucesso",
             data: tweet
         }
-    }
+    };
 
     //atualizar tweet
     public async update(tweetDTO: UpdateTweetDTO): Promise<ResponseDTO> {

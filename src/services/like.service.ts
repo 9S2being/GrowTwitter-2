@@ -23,7 +23,7 @@ export class LikeService {
                 }
             }
 
-            //criar novvo like
+            //criar novo like
             const newLike = new Like(userId, tweetId);
 
             const result = await repository.like.create({

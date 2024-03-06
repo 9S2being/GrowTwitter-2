@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-
 import { UserService } from "../services/user.service"
 import { CreateUserDTO } from "../dtos/user.dto";
 
@@ -40,6 +39,8 @@ export class UserController {
             return response.status(result.code).json(result)
 
         } catch (error) {
+            
+            console.log(error)
             return response.status(500).json({
                 sucess: false,
                 code: response.statusCode,
@@ -48,22 +49,23 @@ export class UserController {
         }
     };
 
-    public async show(request:Request,response:Response) {
+    public async show(request: Request, response: Response) {
         try {
             const { id } = request.params
-
+    
             const result = await userService.findById(id);
-
+    
             return response.status(result.code).json(result);
-
+    
         } catch (error) {
             return response.status(500).json({
-                sucess: false,
+                success: false,
                 code: response.statusCode,
                 message: "Erro ao buscar usuário",
             })
         }
     };
+    
 
     public async update(request:Request,response:Response) {
         try {
@@ -71,11 +73,11 @@ export class UserController {
             const {name,email,password,username} = request.body
 
             const result = await userService.update({
-                id,
-                name,
-                email,
-                password,
-                username,
+                    id,
+                    name,
+                    email,
+                    password,
+                    username,
             })
 
             response.status(result.code).json(result)
@@ -97,7 +99,7 @@ export class UserController {
             response.status(result.code).json(result);
 
             } catch (error) {
-              return response.status(500).json({
+              return response.status(400).json({
                 sucess: false,
                 code: response.statusCode,
                 message: "Erro ao deletar usuário",

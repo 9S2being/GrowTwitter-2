@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-
 import { TweetService } from "../services/tweet.service"
-import { CreateTweetDTO, UpdateTweetDTO } from "../dtos/tweet.dto";
-import { repository } from "../database/prisma.connection";
+import { CreateTweetDTO } from "../dtos/tweet.dto"
+import { ResponseDTO } from "../dtos/response.dto";
 
 
 const tweetService = new TweetService();
@@ -27,65 +26,77 @@ export class TweetController {
             return response.status(200).json(result)
         } catch (error) {
             return response.status(500).json({
-                sucess: false,
+                success: false,
                 code: response.statusCode,
                 message: "Erro ao buscar tweet",
             })
         }
-    };
+    }; 
 
     //criar tweet
-    public async create(request: Request,response:Response) {
-        try {
-            const {idUser} = request.params;
-            const {content, type} = request.body;
+   // Supondo que você tenha definido os tipos CreateTweetDTO e ResponseDTO em um arquivo separado
 
-            if(!content || !type){
-                return response.status(400).json({
-                    sucess: false,
-                    code: response.statusCode,
-                    message: "Preencha os campos obrigatórios",
-                })
-            }
+public async create(request: Request, response: Response): Promise<void> {
+    try {
+        const { id: idUser, content, type } = request.body;
 
-            const tweet: CreateTweetDTO = { content, type, idUser}
-
-            const result = await tweetService.create(tweet)
-
-            return response.status(result.code).json(result)
-
-            } catch(error) {
-                return response.status(500).json({
-                    sucess: false,
-                    code: response.statusCode,
-                    message: "Erro ao criar tweet",
-            })
+        // Verificar se os campos obrigatórios foram fornecidos
+        if (!idUser || !content || !type) {
+            response.status(400).json({
+                success: false,
+                code: response.statusCode,
+                message: "Preencha todos os campos obrigatórios",
+            });
+            return;
         }
+
+        // Criar o objeto DTO para o tweet
+        const tweetDTO: CreateTweetDTO = { idUser, content, type };
+
+        // Chamar o serviço para criar o tweet
+        const result: ResponseDTO = await tweetService.create(tweetDTO);
+
+        // Retornar a resposta do serviço
+        response.status(result.code).json(result);
+    } catch (error) {
+        console.error("Erro ao criar tweet:", error);
+        response.status(500).json({
+            success: false,
+            code: response.statusCode,
+            message: "Erro ao criar tweet",
+        });
     }
+};
+
+    
+    
+    
 
     //atualizar tweet
     public async update(request: Request, response:Response) {
         try {
-            const {id, idUser} = request.params;
+            const {tweetId ,userId} = request.params;
             const {content} = request.body;
 
             if(!content){
                 return response.status(400).json({
-                    sucess: false,
+                    success: false,
                     code: response.statusCode,
                     message: "Preencha os campos obrigatórios",
                 })
             }
 
             const result = await tweetService.update({
-                id,
+                id: tweetId,
                 content,
-                idUser
+                idUser: userId
             })
 
             return response.status(result.code).json(result)
 
         } catch (error) {
+            console.log(error)
+
             return response.status(500).json({
                 success: false,
                 code: response.statusCode,
@@ -104,7 +115,7 @@ export class TweetController {
             return response.status(result.code).json(result)
         } catch (error) {
            return response.status(500).json({
-            sucess: false,
+            success: false,
             code: response.statusCode,
             message: "Erro ao deletar tweet"
            })

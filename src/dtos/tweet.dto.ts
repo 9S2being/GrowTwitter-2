@@ -1,6 +1,8 @@
+import { TweetType } from "@prisma/client"
+
 export interface CreateTweetDTO {
     content: string
-    type: string
+    type: TweetType
     idUser: string
   
 }

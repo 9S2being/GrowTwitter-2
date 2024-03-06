@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 
 export class User {
-  private _id: string;
+   private _id: string;
 
   constructor(
     private _name: string,
