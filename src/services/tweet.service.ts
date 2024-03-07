@@ -96,103 +96,175 @@ export class TweetService {
     
     
     //encontrar tweet especifico
+    
+
     public async findById(idUser: string, id: string): Promise<ResponseDTO> {
-        const tweet = await repository.tweet.findUnique({
-            where: {id}
-        })
+        try {
+            // Procurar o tweet pelo ID fornecido
+            const tweet = await repository.tweet.findFirst({
+                where: { id }
+            });
 
-        if(!tweet){
-            throw new Error("Tweet não encontrado")
-        }
+            // Verificar se o tweet foi encontrado
+            if (!tweet) {
+                return {
+                    success: false,
+                    code: 404,
+                    message: "Tweet not found",
+                };
+            }
 
-        if (tweet.userId !== idUser) {
-            throw new Error(`O tweet ${tweet} não existe`);
-        }
+            // Verificar se o tweet pertence ao usuário
+            if (tweet.userId !== idUser) {
+                return {
+                    success: false,
+                    code: 403,
+                    message: `Forbidden: This tweet (${id}) does not belong to the user (${idUser})`,
+                };
+            }
 
-        return {
-            success: true,
-            code: 200,
-            message: "Tweet encontrado com sucesso",
-            data: tweet
+            // Retornar uma resposta de sucesso com o tweet encontrado
+            return {
+                success: true,
+                code: 200,
+                message: "Tweet found successfully",
+                data: tweet
+            };
+        } catch (error) {
+            console.error("Error finding tweet:", error);
+            return {
+                success: false,
+                code: 500,
+                message: "Error finding tweet",
+            };
         }
-    };
+    }
+
 
     //atualizar tweet
     public async update(tweetDTO: UpdateTweetDTO): Promise<ResponseDTO> {
-        const user = await repository.user.findUnique({
-            where: {
-                id: tweetDTO.idUser
+        try {
+            // Verificar se os dados de entrada são fornecidos corretamente
+            if (!tweetDTO.idUser || !tweetDTO.id || !tweetDTO.content) {
+                return {
+                    success: false,
+                    code: 400,
+                    message: "Missing required fields",
+                };
             }
-        })
-
-        if(!user) {
-            throw new Error("Usuário não encontrado")
-        }
-
-        const tweet = await repository.tweet.findUnique({
-            where: {
-                id: tweetDTO.id
+    
+            // Verificar se o tweet existe
+            const tweet = await repository.tweet.findUnique({
+                where: {
+                    id: tweetDTO.id
+                }
+            });
+    
+            // Se o tweet não for encontrado, retornar um erro
+            if (!tweet) {
+                return {
+                    success: false,
+                    code: 404,
+                    message: "Tweet not found",
+                };
             }
-        })
-
-        if(!tweet) {
-            throw new Error("Tweet não encontrado")
+    
+            // Atualizar o tweet com o conteúdo fornecido
+            const updatedTweet = await repository.tweet.update({
+                where: {
+                    id: tweetDTO.id
+                },
+                data: {
+                    content: tweetDTO.content
+                }
+            });
+    
+            // Retornar uma resposta indicando que o tweet foi atualizado com sucesso
+            return {
+                success: true,
+                code: 200,
+                message: "Tweet updated successfully",
+                data: updatedTweet
+            };
+        } catch (error) {
+            // Se ocorrer algum erro durante o processo, retornar uma resposta de erro
+            console.error("Error updating tweet:", error);
+            return {
+                success: false,
+                code: 500,
+                message: "Error updating tweet",
+            };
         }
-
-    const result = await repository.tweet.update({
-        where: {
-            id: tweetDTO.id
-        },
-        data: {
-            content: tweetDTO.content
-        }
-    }) 
-
-        return {
-            success: true,
-            code: 200,
-            message: "Tweet atualizado com sucesso",
-            data: result
-        }
-    };
+    }
+    
     
     //Deletar tweet
-    public async delete(id: string, idUser: string): Promise<ResponseDTO>{
-        const user = await repository.user.findUnique({
-            where: {
-                id: idUser
+    public async delete(id: string, idUser: string): Promise<ResponseDTO> {
+        try {
+            console.log("Starting tweet deletion...");
+            console.log("Tweet ID:", id);
+            console.log("User ID:", idUser);
+    
+            // Verificar se o usuário existe
+            const user = await repository.user.findUnique({
+                where: { id: idUser }
+            });
+            
+            console.log("User:", user);
+    
+            if (!user) {
+                console.log("User not found.");
+                return {
+                    success: false,
+                    code: 404,
+                    message: "User not found",
+                };
             }
-        })
-
-        if(!user) {
-            throw new Error("Usuário não encontrado")
-        }
-        
-        
-        const tweet = await repository.tweet.findUnique({
-            where: {id: id}
-        })
-
-        if(tweet){
-            throw new Error("Tweet não encontrado")
-        }
-
-        const result = await repository.tweet.delete({
-            where: {
-                id: id
+    
+            // Verificar se o tweet pertence ao usuário
+            const tweet = await repository.tweet.findUnique({
+                where: { id }
+            });
+    
+            console.log("Tweet:", tweet);
+    
+            if (!tweet) {
+                console.log("Tweet not found.");
+                return {
+                    success: false,
+                    code: 404,
+                    message: "Tweet not found",
+                };
             }
-        })
-
-        return {
-            success: true,
-            code: 200,
-            message: "Tweet excluido com sucesso",
-            data: result
+    
+            // Verificar se o tweet pertence ao usuário
+            if (tweet.userId !== idUser) {
+                console.log("Tweet does not belong to the user.");
+                return {
+                    success: false,
+                    code: 403,
+                    message: "Forbidden: This tweet does not belong to the user",
+                };
+            }
+    
+            // Excluir o tweet
+            await repository.tweet.delete({ where: { id } });
+    
+            console.log("Tweet deleted successfully.");
+            return {
+                success: true,
+                code: 200,
+                message: "Tweet deleted successfully",
+            };
+        } catch (error) {
+            console.error("Error deleting tweet:", error);
+            return {
+                success: false,
+                code: 500,
+                message: "Error deleting tweet",
+            };
         }
-    };    
-
+    }
+    
+    
 };
-
-
-
-

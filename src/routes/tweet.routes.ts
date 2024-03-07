@@ -7,7 +7,6 @@ const router = express.Router();
 const tweetController = new TweetController();
 
 //Rotas de Tweet 
-
         // listar todos os tweets de um usuário
         router.get("/users/:userId/tweet", tweetController.index);
 
@@ -15,12 +14,13 @@ const tweetController = new TweetController();
         router.post("/users/:userId/tweet",  tweetController.create);
 
         //Listar por id de tweet
-        router.get('/users/:userId/tweet/:tweetId',  tweetController.show);
+        router.get('/users/:userId/tweet/:id',  tweetController.show);
 
         //Atualiza
-        router.put('/users/:userId/tweet/:tweetId', tweetController.update);
+        router.put('/users/:userId/tweet/:id', tweetController.update);
 
         //Deleta
-        router.delete('/users/:userId/tweet/:tweetId', tweetController.delete);
+        router.delete('/users/:userId/tweet/:id', tweetController.delete);
+
 
         export default router;
