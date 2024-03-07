@@ -12,6 +12,11 @@ export class TweetService {
             const tweets = await repository.tweet.findMany({
                 where: {
                     userId: idUser
+                }, 
+                include: {
+                    user: true,
+                    replies: true,
+                    likes: true
                 }
             });
 

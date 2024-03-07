@@ -5,47 +5,63 @@ import { Like } from "../models/like.model";
 export class LikeService {
     public async createLike(userId: string, tweetId: string): Promise<ResponseDTO> {
         try {
-
-            //verificar se o like ja existe
+            // Registrando IDs de usuário e tweet recebidos
+            console.log("userId:", userId);
+            console.log("tweetId:", tweetId);
+    
+            // Verificar se os IDs do usuário e do tweet são válidos
+            if (!userId || !tweetId || userId.trim() === '' || tweetId.trim() === '') {
+                return {
+                    success: false,
+                    code: 400,
+                    message: "IDs de usuário ou de tweet inválidos",
+                    data: null
+                };
+            }
+    
+            // Verificar se o like já existe
             const existingLike = await repository.like.findUnique({
                 where: {
                     userId: userId,
                     tweetId: tweetId
                 }
-            })
-
-            if(existingLike){
+            });
+    
+            if (existingLike) {
                 return {
                     success: false,
                     code: 400,
                     message: "Você já curtiu este tweet",
                     data: null
-                }
+                };
             }
-
-            //criar novo like
-            const newLike = new Like(userId, tweetId);
-
-            const result = await repository.like.create({
-                data: newLike
-            })
-
+    
+            // Criar novo like
+            const newLikeData = { userId, tweetId }; // Simplificação da criação do novo like
+            const newLike = await repository.like.create({
+                data: newLikeData
+            });
+    
             return {
                 success: true,
                 code: 201,
                 message: "Tweet curtido com sucesso",
-                data: result
-            }
+                data: newLike
+            };
         } catch (error) {
+            // Registrar o erro no console para depuração
+            console.error("Erro ao curtir o tweet:", error);
+    
             return {
                 success: false,
                 code: 500,
                 message: "Erro ao curtir o tweet",
                 data: null
-            }
+            };
         }
     };
-
+    
+    
     //Retorna os likes de um tweet especifico 
     public async getLikesByTweetId(tweetId: string): Promise<ResponseDTO> {
         try {
@@ -76,46 +92,45 @@ export class LikeService {
     //Remove o like de um tweet
     public async deleteLike(userId: string, tweetId: string): Promise<ResponseDTO> {
         try {
-
-            //Verifica se existe
+            // Verifica se o like existe
             const existingLike = await repository.like.findUnique({
                 where: {
                     userId: userId,
                     tweetId: tweetId
                 }
-            })
-
-            if(!existingLike) {
+            });
+    
+            if (!existingLike) {
                 return {
                     success: false,
                     code: 400,
                     message: "Você ainda não curtiu este tweet",
                     data: null
-                }
+                };
             }
-
-            const deletedLike = await repository.like.findUnique({
+    
+            // Remove o like
+            await repository.like.delete({
                 where: {
-                 userId: userId, 
+                    userId: userId,
                     tweetId: tweetId
                 }
-                })
-
+            });
+    
             return {
                 success: true,
                 code: 200,
                 message: "Like removido com sucesso do tweet",
-                data: deletedLike
-            }
-                
+                data: null
+            };
         } catch (error) {
+            console.error("Erro ao remover o like do tweet:", error); // Registrar o erro no console para depuração
             return {
                 success: false,
                 code: 500,
                 message: "Erro ao remover o like do tweet",
                 data: null
-            }
+            };
         }
     }
 }
-
