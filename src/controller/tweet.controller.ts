@@ -21,13 +21,12 @@ export class TweetController {
     public async show(request: Request, response: Response): Promise<void> {
         try {
             const { userId, id } = request.params;
-    
-            // Verificar se userId e id foram fornecidos
+            
             if (!userId || !id) {
                 response.status(400).json({
                     success: false,
                     code: 400,
-                    message: "Missing user ID or tweet ID",
+                    message: "O ID do usuário ou ID do tweet não foram encontrados",
                 });
                 return;
             }
@@ -36,11 +35,10 @@ export class TweetController {
     
             response.status(200).json(result);
         } catch (error) {
-            console.error("Error fetching tweet:", error);
             response.status(500).json({
                 success: false,
                 code: 500,
-                message: "Error fetching tweet",
+                message: "Erro ao buscar tweet",
             });
         }
     };
@@ -50,7 +48,7 @@ export class TweetController {
         try {
             const { id: idUser, content, type } = request.body;
 
-            // Verificar se os campos obrigatórios foram fornecidos
+            
             if (!idUser || !content || !type) {
                 response.status(400).json({
                     success: false,
@@ -69,7 +67,6 @@ export class TweetController {
             // Retornar a resposta do serviço
             response.status(result.code).json(result);
         } catch (error) {
-            console.error("Erro ao criar tweet:", error);
             response.status(500).json({
                 success: false,
                 code: response.statusCode,
@@ -79,8 +76,6 @@ export class TweetController {
     };
 
     //atualizar tweet
-   // Certifique-se de importar a interface UpdateTweetDTO corretamente
-
    public async update(request: Request, response: Response): Promise<void> {
     try {
         const { userId, id } = request.params;
@@ -91,7 +86,7 @@ export class TweetController {
             response.status(400).json({
                 success: false,
                 code: 400,
-                message: "Content is required",
+                message: "O conteudo do tweet não pode ser vazio",
             });
             return;
         }
@@ -106,37 +101,29 @@ export class TweetController {
         // Retornar o resultado da atualização
         response.status(result.code).json(result);
     } catch (error) {
-        console.error("Error updating tweet:", error);
-        response.status(500).json({
-            success: false,
-            code: 500,
-            message: "Error updating tweet",
-        });
-    }
-}
-
+            response.status(500).json({
+                success: false,
+                code: 500,
+                message: "Error ao atualizar tweet",
+            });
+        }
+    };
 
     //deletar tweet
     public async delete(request: Request, response: Response): Promise<void> {
         try {
             const { id, userId } = request.params;
     
-            // Verificar se o tweet foi excluído com sucesso
-            const result = await tweetService.delete(id, userId);
+            const result = await tweetService.delete(id, userId)
     
-            // Retornar a resposta
-            response.status(result.code).json(result);
+            response.status(result.code).json(result)
+
         } catch (error) {
-            console.error("Error deleting tweet:", error);
-    
-            // Se ocorrer um erro, retornar uma resposta com status 500
-            response.status(500).json({
+            response.status(400).json({
                 success: false,
-                code: 500,
-                message: "Error deleting tweet",
+                code: 400,
+                message: "Erro ao tentar excluir tweet",
             });
         }
-    }
-    
-
+    };
 };

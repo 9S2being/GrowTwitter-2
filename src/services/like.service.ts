@@ -1,46 +1,42 @@
 import { repository } from "../database/prisma.connection";
 import { ResponseDTO } from "../dtos/response.dto";
-import { Like } from "../models/like.model";
 
 export class LikeService {
+    //Dar like em um tweet
     public async createLike(userId: string, tweetId: string): Promise<ResponseDTO> {
         try {
-            // Registrando IDs de usuário e tweet recebidos
-            console.log("userId:", userId);
-            console.log("tweetId:", tweetId);
-    
-            // Verificar se os IDs do usuário e do tweet são válidos
+            
+            
             if (!userId || !tweetId || userId.trim() === '' || tweetId.trim() === '') {
                 return {
                     success: false,
                     code: 400,
                     message: "IDs de usuário ou de tweet inválidos",
-                    data: null
-                };
+                }
             }
     
-            // Verificar se o like já existe
+           
             const existingLike = await repository.like.findUnique({
                 where: {
                     userId: userId,
                     tweetId: tweetId
                 }
-            });
+            })
     
             if (existingLike) {
                 return {
                     success: false,
                     code: 400,
                     message: "Você já curtiu este tweet",
-                    data: null
-                };
+                }
             }
     
-            // Criar novo like
-            const newLikeData = { userId, tweetId }; // Simplificação da criação do novo like
+            
+            const newLikeData = { userId, tweetId };
+
             const newLike = await repository.like.create({
                 data: newLikeData
-            });
+            })
     
             return {
                 success: true,
@@ -49,15 +45,11 @@ export class LikeService {
                 data: newLike
             };
         } catch (error) {
-            // Registrar o erro no console para depuração
-            console.error("Erro ao curtir o tweet:", error);
-    
             return {
                 success: false,
                 code: 500,
                 message: "Erro ao curtir o tweet",
-                data: null
-            };
+            }
         }
     };
     
@@ -84,7 +76,7 @@ export class LikeService {
                 success: false,
                 code: 500,
                 message: "Erro ao encontrar os likes do tweet",
-                data: null
+            
             }
         }
     };
@@ -92,7 +84,7 @@ export class LikeService {
     //Remove o like de um tweet
     public async deleteLike(userId: string, tweetId: string): Promise<ResponseDTO> {
         try {
-            // Verifica se o like existe
+            
             const existingLike = await repository.like.findUnique({
                 where: {
                     userId: userId,
@@ -105,12 +97,12 @@ export class LikeService {
                     success: false,
                     code: 400,
                     message: "Você ainda não curtiu este tweet",
-                    data: null
+                    
                 };
             }
     
-            // Remove o like
-            await repository.like.delete({
+            
+        const removedLike =  await repository.like.delete({
                 where: {
                     userId: userId,
                     tweetId: tweetId
@@ -121,16 +113,15 @@ export class LikeService {
                 success: true,
                 code: 200,
                 message: "Like removido com sucesso do tweet",
-                data: null
+                data: removedLike
+               
             };
         } catch (error) {
-            console.error("Erro ao remover o like do tweet:", error); // Registrar o erro no console para depuração
             return {
                 success: false,
-                code: 500,
+                code: 400,
                 message: "Erro ao remover o like do tweet",
-                data: null
-            };
+            }
         }
-    }
+    };
 }

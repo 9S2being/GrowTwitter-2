@@ -105,5 +105,5 @@ export class UserController {
                 message: "Erro ao deletar usuário",
             })  
         }
-    }
+    };
 };

@@ -18,18 +18,18 @@ export class ReplyService {
             return {
                 success: true,
                 code: 201,
-                message: "Resposta criada com sucesso.",
+                message: "Resposta criada com sucesso",
                 data: createdReply
             };
         } catch (error) {
             return {
                 success: false,
-                code: 500,
+                code: 400,
                 message: "Erro ao criar resposta.",
-                data: null
+                
             };
         }
-    }
+    };
 
     public async getReplyById(replyId: string): Promise<ResponseDTO> {
         try {
@@ -41,24 +41,24 @@ export class ReplyService {
                 return {
                     success: false,
                     code: 404,
-                    message: "Resposta não encontrada.",
-                    data: null
+                    message: "Resposta não encontrada",
+                    
                 }
             }
 
             return {
                 success: true,
                 code: 200,
-                message: "Resposta encontrada.",
+                message: "Resposta encontrada",
                 data: reply
             }
 
         } catch (error) {
             return {
                 success: false,
-                code: 500,
-                message: "Erro ao buscar resposta.",
-                data: null
+                code: 400,
+                message: "Erro ao buscar resposta",
+              
             }
         }
     };
@@ -73,15 +73,16 @@ export class ReplyService {
             return {
                 success: true,
                 code: 200,
-                message: "Resposta atualizada com sucesso.",
+                message: "Resposta atualizada com sucesso",
                 data: updatedReply
+
             };
         } catch (error) {
             return {
                 success: false,
-                code: 500,
-                message: "Erro ao atualizar resposta.",
-                data: null
+                code: 400,
+                message: "Erro ao atualizar resposta",
+                
             }
         }
     };
@@ -93,16 +94,16 @@ export class ReplyService {
             return {
                 success: true,
                 code: 200,
-                message: "Resposta excluída com sucesso.",
-                data: null
+                message: "Resposta excluída com sucesso",
+                
             }
 
         } catch (error) {
             return {
                 success: false,
-                code: 500,
-                message: "Erro ao excluir resposta.",
-                data: null
+                code: 400,
+                message: "Erro ao excluir resposta",
+                
             }
 
         }

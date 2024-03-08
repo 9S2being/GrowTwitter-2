@@ -1,3 +1,4 @@
+import { count } from "console";
 import { repository } from "../database/prisma.connection";
 
 import { ResponseDTO } from "../dtos/response.dto";
@@ -14,6 +15,9 @@ export class UserService {
                 email: true,
                 username: true,
                 password: true,
+                followers: true,
+                following: true,
+                tweets: true
                 
             }
         })
