@@ -19,7 +19,6 @@ export class ReplyController {
                 success: false,
                 code: 500,
                 message: "Erro interno do servidor.",
-                data: null
             })
         }
     };
@@ -35,9 +34,8 @@ export class ReplyController {
         } catch (error) {
             response.status(500).json({
                 success: false,
-                code: 500,
-                message: "Erro interno do servidor.",
-                data: null
+                code: 400,
+                message: "Erro interno do servidor",
             })
         }
     };
@@ -56,9 +54,8 @@ export class ReplyController {
         } catch (error) {
             response.status(500).json({
                 success: false,
-                code: 500,
-                message: "Erro interno do servidor.",
-                data: null
+                code: 400,
+                message: "Erro interno do servidor",
             })
         }
     };
@@ -75,9 +72,8 @@ export class ReplyController {
         } catch (error) {
             response.status(500).json({
                 success: false,
-                code: 500,
-                message: "Erro interno do servidor.",
-                data: null
+                code: 400,
+                message: "Erro interno do servidor",
             })
         }
     };

@@ -1,4 +1,3 @@
-import { count } from "console";
 import { repository } from "../database/prisma.connection";
 
 import { ResponseDTO } from "../dtos/response.dto";
@@ -7,6 +6,7 @@ import { CreateUserDTO, UpdateUserDTO } from "../dtos/user.dto";
 import { User } from "../models/user.model";
 
 export class UserService {
+    //Listar todos os usuários
     public async findAll(): Promise<ResponseDTO> {
         const users = await repository.user.findMany({
             select: {
@@ -17,7 +17,9 @@ export class UserService {
                 password: true,
                 followers: true,
                 following: true,
-                tweets: true
+                tweets: true,
+                token: true
+
                 
             }
         })
@@ -29,7 +31,7 @@ export class UserService {
                 data: users
             }
         };
-
+        //Cadastrar novo usuário
         public async create(userDTO: CreateUserDTO): Promise<ResponseDTO> {
             const newUser = new User(
                 userDTO.name,
@@ -55,6 +57,7 @@ export class UserService {
             }
         };
 
+        //Buscar por usuário especifico
         public async findById(id: string): Promise<ResponseDTO> {
             const user = await repository.user.findUnique({
                 where: { id }
@@ -72,6 +75,7 @@ export class UserService {
             }
         };
 
+        //Atualizar informações de usuário
         public async update(userDTO: UpdateUserDTO): Promise<ResponseDTO> {
             const user = await repository.user.findUnique({
                 where: {
@@ -100,27 +104,28 @@ export class UserService {
             code: 200,
             message: "Usuário atualizado com sucesso",
             data: updatedUser
-        }
-    };
+            }
+        };
 
-    public async delete(id: string): Promise<ResponseDTO> {
-        const user = await repository.user.findUnique({
-            where: { id: id }
-        })
+        //Excluir conta 
+        public async delete(id: string): Promise<ResponseDTO> {
+            const user = await repository.user.findUnique({
+                where: { id: id }
+            })
 
-        if(!user) {
-            throw new Error("Usuário não encontrado")
-        }
+            if(!user) {
+                throw new Error("Usuário não encontrado")
+            }
 
-        const deletedUser = await repository.user.delete({
-            where: { id: id }
-        })
+            const deletedUser = await repository.user.delete({
+                where: { id: id }
+            })
 
-        return {
-            success: true,
-            code: 200,
-            message: "Usuário deletado com sucesso",
-            data: deletedUser
-        }
-    };
-}
+            return {
+                success: true,
+                code: 200,
+                message: "Usuário deletado com sucesso",
+                data: deletedUser
+            }
+        };
+    }

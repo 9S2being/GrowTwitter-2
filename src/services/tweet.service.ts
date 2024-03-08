@@ -139,7 +139,7 @@ export class TweetService {
                 return {
                     success: false,
                     code: 400,
-                    message: "Missing required fields",
+                    message: "Preencha todos os campos",
                 };
             }
     
@@ -155,7 +155,7 @@ export class TweetService {
                 return {
                     success: false,
                     code: 404,
-                    message: "Tweet not found",
+                    message: "Tweet não encontrado",
                 };
             }
     
@@ -169,20 +169,17 @@ export class TweetService {
                 }
             });
     
-            // Retornar uma resposta indicando que o tweet foi atualizado com sucesso
             return {
                 success: true,
                 code: 200,
-                message: "Tweet updated successfully",
+                message: "Tweet atualizado com sucesso",
                 data: updatedTweet
             };
         } catch (error) {
-            // Se ocorrer algum erro durante o processo, retornar uma resposta de erro
-            console.error("Error updating tweet:", error);
             return {
                 success: false,
                 code: 500,
-                message: "Error updating tweet",
+                message: "Erro ao tentar atualizar tweet",
             };
         }
     }
@@ -195,15 +192,12 @@ export class TweetService {
             const user = await repository.user.findUnique({
                 where: { id: idUser }
             });
-            
-            console.log("User:", user);
     
             if (!user) {
-                console.log("User not found.");
                 return {
                     success: false,
                     code: 404,
-                    message: "User not found",
+                    message: "Usuário não encontrado",
                 };
             }
     
